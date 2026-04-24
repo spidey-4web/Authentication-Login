@@ -1,22 +1,13 @@
-const { createClient } = require('@libsql/client');
+const mongoose = require('mongoose');
 
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL || 'file:/tmp/database.db',
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  }
+};
 
-async function initDB() {
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE NOT NULL,
-      username TEXT NOT NULL,
-      password TEXT NOT NULL
-    )
-  `);
-  console.log('Database initialized');
-}
-
-initDB().catch(console.error);
-
-module.exports = db;
+module.exports = connectDB;
