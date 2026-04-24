@@ -30,37 +30,35 @@ app.post('/api/register', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
-    db.run(query, [username, email, hashedPassword], function(err) {
-      if (err) {
-        console.error("DB Error:", err);
-        if (err.message && err.message.includes('UNIQUE constraint failed')) {
-          return res.status(400).json({ message: 'Email already exists' });
-        }
-        return res.status(500).json({ message: 'Database error', error: err ? err.message : 'Unknown DB error' });
-      }
-      res.status(201).json({ message: 'User registered successfully', userId: this.lastID });
+    await db.execute({
+      sql: `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
+      args: [username, email, hashedPassword],
     });
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error("Server Catch Error:", error);
+    console.error('Register error:', error);
+    if (error.message && error.message.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Login Route
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Please fill in all fields' });
   }
 
-  const query = `SELECT * FROM users WHERE email = ?`;
-  db.get(query, [email], async (err, user) => {
-    if (err) {
-      return res.status(500).json({ message: 'Database error' });
-    }
+  try {
+    const result = await db.execute({
+      sql: `SELECT * FROM users WHERE email = ?`,
+      args: [email],
+    });
+
+    const user = result.rows[0];
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -76,10 +74,13 @@ app.post('/api/login', (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
-  });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
 
 // Middleware to verify JWT
@@ -96,13 +97,17 @@ const auth = (req, res, next) => {
   }
 };
 
-// Example Protected Route
-app.get('/api/user', auth, (req, res) => {
-  const query = `SELECT id, username, email FROM users WHERE id = ?`;
-  db.get(query, [req.user.userId], (err, user) => {
-    if (err) return res.status(500).json({ message: 'Server error' });
-    res.json(user);
-  });
+// Protected Route
+app.get('/api/user', auth, async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: `SELECT id, username, email FROM users WHERE id = ?`,
+      args: [req.user.userId],
+    });
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 if (process.env.NODE_ENV !== 'production') {

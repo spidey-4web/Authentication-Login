@@ -1,30 +1,22 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { createClient } = require('@libsql/client');
 
-const dbPath = process.env.NODE_ENV === 'production' 
-  ? '/tmp/database.sqlite' 
-  : path.resolve(__dirname, 'database.sqlite');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Could not connect to database', err);
-  } else {
-    console.log('Connected to SQLite database');
-  }
+const db = createClient({
+  url: process.env.TURSO_DATABASE_URL || 'file:/tmp/database.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE,
-    username TEXT,
-    password TEXT
-  )`, (err) => {
-    if (err) {
-      console.error('Error creating table', err);
-    } else {
-      console.log('Users table created or already exists');
-    }
-  });
-});
+async function initDB() {
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      username TEXT NOT NULL,
+      password TEXT NOT NULL
+    )
+  `);
+  console.log('Database initialized');
+}
+
+initDB().catch(console.error);
 
 module.exports = db;
