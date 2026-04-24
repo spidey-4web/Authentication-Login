@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-body: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --ink: #111111;
+  --ink-soft: #333333;
+  --text-muted: #888888;
+  --text-light: #AAAAAA;
+  --border: #E0E0E0;
+  --border-dark: #111111;
+  --error-bg: #FFF5F5;
+  --error-border: #FFCCCC;
+  --error-text: #CC3333;
+  --transition-fast: all 0.2s ease;
+  --transition-smooth: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-body);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Auth Container ────────────────────────────────── */
+
+.auth-container {
+  width: 500px;
+  padding: 3rem 2.75rem 2.5rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 var(--ink);
+  position: relative;
+  animation: entrance 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes entrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+}
+
+/* ─── Decorative Header Line ──────────────────────── */
+
+.auth-header-line {
+  width: 40px;
+  height: 2px;
+  background: var(--ink);
+  margin: 0 auto 1.75rem;
+}
+
+/* ─── Typography ───────────────────────────────────── */
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+p.subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  font-family: var(--font-sans);
+}
+
+/* ─── Form Elements ────────────────────────────────── */
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  margin-bottom: 0.6rem;
+  color: var(--text-muted);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  border-radius: 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  transition: var(--transition-smooth);
+  letter-spacing: 0.2px;
+}
+
+input::placeholder {
+  color: var(--text-light);
+  font-weight: 300;
+}
+
+input:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+  border-bottom-width: 2px;
+}
+
+/* ─── Password Toggle ─────────────────────────────── */
+
+.toggle-password {
+  position: absolute;
+  right: 0;
+  bottom: 0.65rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: var(--transition-fast);
+  padding: 0;
+}
+
+.toggle-password:hover {
+  color: var(--ink);
+}
+
+/* ─── Primary Button ────────────────────────────────── */
+
+.btn {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 1.25rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* ─── Auth Footer ────────────────────────────────────── */
+
+.auth-footer {
+  margin-top: 2.25rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  letter-spacing: 0.2px;
+}
+
+.auth-footer a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 4px;
+  transition: var(--transition-fast);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1px;
+}
+
+.auth-footer a:hover {
+  border-bottom-color: transparent;
+}
+
+/* ─── Error Message ─────────────────────────────────── */
+
+.error-message {
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
+  padding: 0.7rem 1rem;
+  border-radius: 0;
+  font-size: 0.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  letter-spacing: 0.2px;
+}
+
+/* ─── Dashboard ─────────────────────────────────────── */
+
+.dashboard-avatar {
+  width: 56px;
+  height: 56px;
+  background: var(--ink);
+  color: #FFFFFF;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-info {
+  padding: 1.75rem 0 2rem;
+  text-align: left;
+}
+
+.dashboard-info p {
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 0.88rem;
+  font-family: var(--font-sans);
+}
+
+.dashboard-date {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.2px;
+}
+
+.dashboard-welcome-msg {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  letter-spacing: 0.2px;
+}
+
+.btn-outline {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-outline:hover {
+  background: var(--ink);
+  color: #FFFFFF;
+}
+
+/* ─── Password Strength Indicator ────────────────────── */
+
+.pw-strength {
+  margin-top: 0.85rem;
+}
+
+.pw-strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.4rem;
+}
+
+.pw-strength-segment {
+  flex: 1;
+  height: 3px;
+  background: #E0E0E0;
+  transition: background 0.25s ease;
+}
+
+.pw-strength-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.6rem;
+  transition: color 0.25s ease;
+}
+
+.pw-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pw-rules li {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-light);
+  padding: 0.2rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.pw-rules li.passed {
+  color: var(--ink);
+}
+
+.pw-rule-icon {
+  font-size: 0.7rem;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pw-rules li.passed .pw-rule-icon {
+  font-weight: 700;
+}
+
+/* ─── Footer Decorative Line ─────────────────────────── */
+
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: left;
+}
+
+.auth-container:hover::after {
+  transform: scaleX(1);
+}
