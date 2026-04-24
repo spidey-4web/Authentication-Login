@@ -3,15 +3,20 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('./db');
+const connectDB = require('./db');
+const User = require('./models/User');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 
+// Connect to MongoDB
+connectDB();
+
 app.use(cors());
 app.use(express.json());
 
+// Strip Vercel route prefix in production
 app.use((req, res, next) => {
   if (req.url.startsWith('/_/backend')) {
     req.url = req.url.replace('/_/backend', '');
@@ -19,7 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
+// Register Route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -28,17 +33,18 @@ app.post('/api/register', async (req, res) => {
   }
 
   try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.execute({
-      sql: `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
-      args: [username, email, hashedPassword],
-    });
+    const user = new User({ username, email, password: hashedPassword });
+    await user.save();
+
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Register error:', error);
-    if (error.message && error.message.includes('UNIQUE constraint failed')) {
-      return res.status(400).json({ message: 'Email already exists' });
-    }
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
@@ -52,12 +58,7 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    const result = await db.execute({
-      sql: `SELECT * FROM users WHERE email = ?`,
-      args: [email],
-    });
-
-    const user = result.rows[0];
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -67,11 +68,11 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
     res.json({
       token,
       user: {
-        id: user.id,
+        id: user._id,
         username: user.username,
         email: user.email,
       },
@@ -99,11 +100,8 @@ const auth = (req, res, next) => {
 // Protected Route
 app.get('/api/user', auth, async (req, res) => {
   try {
-    const result = await db.execute({
-      sql: `SELECT id, username, email FROM users WHERE id = ?`,
-      args: [req.user.userId],
-    });
-    res.json(result.rows[0]);
+    const user = await User.findById(req.user.userId).select('-password');
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
