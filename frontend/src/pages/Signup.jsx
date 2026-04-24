@@ -57,7 +57,8 @@ const Signup = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/register', {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:5000/api' : '/_/backend/api';
+      const res = await axios.post(`${API_URL}/register`, {
         username, email, password
       });
       if (res.status === 201) {

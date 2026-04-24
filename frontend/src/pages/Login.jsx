@@ -19,7 +19,8 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/login', formData);
+      const API_URL = import.meta.env.DEV ? 'http://localhost:5000/api' : '/_/backend/api';
+      const res = await axios.post(`${API_URL}/login`, formData);
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
