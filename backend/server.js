@@ -12,6 +12,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_123';
 app.use(cors());
 app.use(express.json());
 
+// Strip Vercel route prefix in production
+app.use((req, res, next) => {
+  if (req.url.startsWith('/_/backend')) {
+    req.url = req.url.replace('/_/backend', '');
+  }
+  next();
+});
+
 // Register Route
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
