@@ -34,15 +34,17 @@ app.post('/api/register', async (req, res) => {
     const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
     db.run(query, [username, email, hashedPassword], function(err) {
       if (err) {
-        if (err.message.includes('UNIQUE constraint failed')) {
+        console.error("DB Error:", err);
+        if (err.message && err.message.includes('UNIQUE constraint failed')) {
           return res.status(400).json({ message: 'Email already exists' });
         }
-        return res.status(500).json({ message: 'Database error' });
+        return res.status(500).json({ message: 'Database error', error: err ? err.message : 'Unknown DB error' });
       }
       res.status(201).json({ message: 'User registered successfully', userId: this.lastID });
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("Server Catch Error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
